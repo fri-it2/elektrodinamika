@@ -1,0 +1,28 @@
+#!/usr/bin/python3
+print('*** Animacija stojnega vala - S53MV 24.10.2020 ***')
+
+Gama=-0.4       #Odbojnost bremena pri z=0
+ab=0.07         #Slabljenje voda alpha/beta
+
+import numpy as np                  #Uporaba učinkovitih funkcij numpy
+import matplotlib.pyplot as plt     #Risanje rezultata z matplotlib
+
+def U(az,wt,bz,Gama):       #Val napetosti na prenosnem vodu
+    return np.exp(-az+1j*(wt-bz))+Gama*np.exp(az+1j*(wt+bz))
+
+bz=np.linspace(-20,0,3333)  #Faza beta*z negativna proti izvoru
+az=ab*bz                    #Slabljenje alpha*z
+wt=0                        #Začetni omega*t
+
+fig,ax=plt.subplots()       #Prvo risanje z normalizacijo matplotlib
+ax.plot(bz,np.abs(U(az,wt,bz,Gama)),'-c')           #Stojni val |U|
+ax.plot(bz,-np.abs(U(az,wt,bz,Gama)),'--c')         #-|U|
+line,=ax.plot(bz,np.real(U(az,wt,bz,Gama)),'-r')    #Trenutni u(t,z)
+plt.title(r'Breme $\Gamma=$'+str(Gama)+r'     Slabljenje $\alpha/\beta=$'+str(ab))
+
+while plt.waitforbuttonpress(0.01)==None:           #Zanka animacije
+    wt+=0.03                #Časovni korak omega*t
+    line.set_ydata(np.real(U(az,wt,bz,Gama)))       #Trenutni u(t,z)
+    fig.canvas.draw()       #Ponovno risanje
+
+print('*** Konec ***')      #Izhod=pritisk tipke/miške
